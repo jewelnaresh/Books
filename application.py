@@ -4,6 +4,8 @@ from flask import Flask, session, render_template, request
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from werkzeug.security import check_password_hash, generate_password_hash
+
 
 app = Flask(__name__)
 
@@ -44,5 +46,15 @@ def register():
             return render_template("error.html", message = "username already taken")
         if password != confirmation:
             return render_template("error.html", message = "passwords do not match")
+
+        #Creata a hash of the password
+        hashnum = generate_password_hash(password)
+
+        # register new user
+        db.execute("INSERT INTO users (username, hash) VALUES (:username, :hashnum)", {"username": username, "hashnum": hashnum})
+
+        #log in the user and redirect
+        session["user_id"] = username
+        return redirect("/")
     else:
         return render_template("register.html")
