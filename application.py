@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, session
+from flask import Flask, session, render_template, request
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -24,3 +24,25 @@ db = scoped_session(sessionmaker(bind=engine))
 @app.route("/")
 def index():
     return "Project 1: TODO"
+
+@app.route("/register", methods=["GET","POST"])
+def register():
+    """Register a user"""
+    if request.method == "POST":
+
+        # get form data
+        username = request.form.get("username")
+        password = request.form.get("password")
+        confirmation = request.form.get("confirmation")
+
+        # check the form data
+        if not username or not password or not confirmation:
+            return render_template("error.html", message = "Please fill out all the fields")
+        result = db.execute("SELECT username FROM users WHERE username= :name", {"name": username}).fetchall()
+        db.commit()
+        if result:
+            return render_template("error.html", message = "username already taken")
+        if password != confirmation:
+            return render_template("error.html", message = "passwords do not match")
+    else:
+        return render_template("register.html")
