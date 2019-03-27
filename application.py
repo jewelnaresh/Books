@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, session, render_template, request
+from flask import Flask, session, render_template, request, redirect
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -41,7 +41,6 @@ def register():
         if not username or not password or not confirmation:
             return render_template("error.html", message = "Please fill out all the fields")
         result = db.execute("SELECT username FROM users WHERE username= :name", {"name": username}).fetchall()
-        db.commit()
         if result:
             return render_template("error.html", message = "username already taken")
         if password != confirmation:
@@ -52,9 +51,45 @@ def register():
 
         # register new user
         db.execute("INSERT INTO users (username, hash) VALUES (:username, :hashnum)", {"username": username, "hashnum": hashnum})
+        db.commit()
 
-        #log in the user and redirect
-        session["user_id"] = username
+        # log in the user
+        rows = db.execute("SELECT id from users WHERE username= :username", {"username": username}).fetchone()
+        session["user_id"] = rows["id"]
+
+        # redirect the user
         return redirect("/")
     else:
         return render_template("register.html")
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    """login a user"""
+    # Forget any user_id
+    session.clear()
+
+    if request.method == "POST":
+
+        # store form data into variables
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        # check the form data
+        if not username:
+            return render_template("error.html", message="Enter username")
+        elif not password:
+            return render_template("error.html", message="Enter password")
+        
+        # quest the DB for username and password
+        rows = db.execute("SELECT username, hash FROM users WHERE username= :username", {"username": username}).fetchone()
+        
+        # check if password and username is correct
+        if rows["username"] == username and check_password_hash(rows["hash"], password):
+            return redirect("/")
+        else:
+            return render_template("error.html", message="Invalid username or password")
+
+    # if access method is GET show the login page
+    else:
+        return render_template("login.html")
+
