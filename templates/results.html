@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block title %}Results{% endblock %}
+
+{% block main %}
+
+    {% for result in results %}
+        <a href="">{{result["title"]}}</a><br>
+    {% endfor %}
+
+{% endblock %}

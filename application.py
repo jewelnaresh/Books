@@ -25,7 +25,7 @@ db = scoped_session(sessionmaker(bind=engine))
 
 @app.route("/")
 def index():
-    return "Project 1: TODO"
+    return render_template("search.html")
 
 @app.route("/register", methods=["GET","POST"])
 def register():
@@ -93,3 +93,29 @@ def login():
     else:
         return render_template("login.html")
 
+@app.route("/logout")
+def logout():
+    """Logout the user"""
+
+    # Forget any user_id
+    session.clear()
+
+    # Redirect user to login form
+    return redirect("/")
+
+@app.route("/search")
+def books():
+    
+    # get input from form data
+    search = request.args.get("search")
+
+    # check if input data is missing
+    if not search:
+        return render_template("error.html", message="Please enter search terms")
+    
+    # Query the search and output result
+    results = db.execute("SELECT title FROM books WHERE isbn LIKE :q OR title LIKE :q OR author LIKE :q LIMIT 10",{"q": ('%'+search+'%')}).fetchall()
+    if not results:
+        return render_template("error.html", message="No results found")
+    else:
+        return render_template("results.html", results=results)
