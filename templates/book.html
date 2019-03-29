@@ -19,7 +19,7 @@
 </div>
 {%endfor%}
 
-<form action="/review">
+<form action="/review" method="GET">
     Rating<br>
     5<input type="radio" name="rating" value="5">
     4<input type="radio" name="rating" value="4">
@@ -29,7 +29,7 @@
 
     Review<br>
     <input type="text" name="review">
-
+    <input type="hidden" name="book_id" value="{{book.id}}">
     <input type="submit" value="Submit review">
 </form>
 

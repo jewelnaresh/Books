@@ -81,10 +81,11 @@ def login():
             return render_template("error.html", message="Enter password")
         
         # quest the DB for username and password
-        rows = db.execute("SELECT username, hash FROM users WHERE username= :username", {"username": username}).fetchone()
+        row = db.execute("SELECT id, username, hash FROM users WHERE username= :username", {"username": username}).fetchone()
         
         # check if password and username is correct
-        if rows["username"] == username and check_password_hash(rows["hash"], password):
+        if row["username"] == username and check_password_hash(row["hash"], password):
+            session["user_id"] = row.id
             return redirect("/")
         else:
             return render_template("error.html", message="Invalid username or password")
@@ -122,6 +123,16 @@ def books():
 
 @app.route("/books/<string:book_id>")
 def book(book_id):
-    book = db.execute("SELECT isbn, title ,author, year FROM books WHERE id= :book_id", {"book_id": book_id}).fetchone()
+    book = db.execute("SELECT id, isbn, title ,author, year FROM books WHERE id= :book_id", {"book_id": book_id}).fetchone()
     reviews = db.execute("SELECT rating, review FROM reviews WHERE book_id= :book_id", {"book_id": book_id}).fetchall()
     return render_template("book.html", book=book, reviews=reviews)
+
+@app.route("/review")
+def review():
+    rating = request.args.get("rating")
+    review = request.args.get("review")
+    book_id = request.args.get("book_id")
+    user_id = session["user_id"]
+    db.execute("INSERT INTO reviews (rating, review, book_id, user_id) VALUES (:rating, :review, :book_id, :user_id)", {"rating": rating, "review": review, "book_id": book_id, "user_id": user_id})
+    db.commit()
+    return redirect("/books/" + book_id)
