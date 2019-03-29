@@ -1,4 +1,5 @@
 import os
+import requests
 
 from flask import Flask, session, render_template, request, redirect
 from flask_session import Session
@@ -127,7 +128,12 @@ def book(book_id):
     # query the database for book and review details and display it to the user
     book = db.execute("SELECT id, isbn, title ,author, year FROM books WHERE id= :book_id", {"book_id": book_id}).fetchone()
     reviews = db.execute("SELECT rating, review FROM reviews WHERE book_id= :book_id", {"book_id": book_id}).fetchall()
-    return render_template("book.html", book=book, reviews=reviews)
+
+    # get the goodreads data
+    KEY = "1nstTnBgfGhKbOwVncSc0Q"
+    goodreads = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": KEY, "isbns": book.isbn})
+    g = goodreads.json()
+    return render_template("book.html", book=book, reviews=reviews, gr=g)
 
 @app.route("/review")
 def review():

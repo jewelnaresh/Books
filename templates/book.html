@@ -19,6 +19,12 @@
 </div>
 {%endfor%}
 
+<div>
+    Goodreads Data <br>
+    Average rating-{{gr["books"][0]["average_rating"]}} <br>
+    Number of ratings-{{gr["books"][0]["work_ratings_count"]}} <br><br>
+</div>
+
 <form action="/review" method="GET">
     Rating<br>
     5<input type="radio" name="rating" value="5">
