@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}
+{{book.title}}
+{% endblock %}
+
+{% block main %}
+<div>
+    <p>ISBN-{{book.isbn}}</p>
+    <p>Title-{{book.title}}</p>
+    <p>Author-{{book.author}}</p>
+    <p>Year-{{book.year}}</p>
+</div>
+
+{%for review in reviews%}
+<div>
+    <p>Rating is {{review.rating}}</p>
+    <p>{{review.review}}</p>
+</div>
+{%endfor%}
+
+<form action="/review">
+    Rating<br>
+    5<input type="radio" name="rating" value="5">
+    4<input type="radio" name="rating" value="4">
+    3<input type="radio" name="rating" value="3">
+    2<input type="radio" name="rating" value="2">
+    1<input type="radio" name="rating" value="1"><br>
+
+    Review<br>
+    <input type="text" name="review">
+
+    <input type="submit" value="Submit review">
+</form>
+
+{% endblock %}

@@ -114,8 +114,14 @@ def books():
         return render_template("error.html", message="Please enter search terms")
     
     # Query the search and output result
-    results = db.execute("SELECT title FROM books WHERE isbn LIKE :q OR title LIKE :q OR author LIKE :q LIMIT 10",{"q": ('%'+search+'%')}).fetchall()
+    results = db.execute("SELECT title, id FROM books WHERE isbn LIKE :q OR title LIKE :q OR author LIKE :q LIMIT 10",{"q": ('%'+search+'%')}).fetchall()
     if not results:
         return render_template("error.html", message="No results found")
     else:
         return render_template("results.html", results=results)
+
+@app.route("/books/<string:book_id>")
+def book(book_id):
+    book = db.execute("SELECT isbn, title ,author, year FROM books WHERE id= :book_id", {"book_id": book_id}).fetchone()
+    reviews = db.execute("SELECT rating, review FROM reviews WHERE book_id= :book_id", {"book_id": book_id}).fetchall()
+    return render_template("book.html", book=book, reviews=reviews)
