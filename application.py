@@ -123,16 +123,30 @@ def books():
 
 @app.route("/books/<string:book_id>")
 def book(book_id):
+
+    # query the database for book and review details and display it to the user
     book = db.execute("SELECT id, isbn, title ,author, year FROM books WHERE id= :book_id", {"book_id": book_id}).fetchone()
     reviews = db.execute("SELECT rating, review FROM reviews WHERE book_id= :book_id", {"book_id": book_id}).fetchall()
     return render_template("book.html", book=book, reviews=reviews)
 
 @app.route("/review")
 def review():
+
+    # get review form data
     rating = request.args.get("rating")
     review = request.args.get("review")
     book_id = request.args.get("book_id")
-    user_id = session["user_id"]
-    db.execute("INSERT INTO reviews (rating, review, book_id, user_id) VALUES (:rating, :review, :book_id, :user_id)", {"rating": rating, "review": review, "book_id": book_id, "user_id": user_id})
+
+    # query to check if user has already given a review
+    result = db.execute("SELECT id FROM reviews WHERE user_id= :user_id AND book_id= :book_id", {"user_id": session["user_id"], "book_id": book_id}).fetchone()
+
+    # if user had already given a review show an error message
+    if result:
+        return render_template("error.html", message="You have already give a review")
+
+    # add the review form data
+    db.execute("INSERT INTO reviews (rating, review, book_id, user_id) VALUES (:rating, :review, :book_id, :user_id)", {"rating": rating, "review": review, "book_id": book_id, "user_id": session["user_id"]})
     db.commit()
+
+    # redirect user to the current page
     return redirect("/books/" + book_id)
