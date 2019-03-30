@@ -3,6 +3,7 @@ import requests
 
 from flask import Flask, session, render_template, request, redirect
 from flask_session import Session
+from functools import wraps
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -24,7 +25,21 @@ engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
 
+def login_required(f):
+    """
+    Decorate routes to require login.
+
+    http://flask.pocoo.org/docs/1.0/patterns/viewdecorators/
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("user_id") is None:
+            return redirect("/login")
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.route("/")
+@login_required
 def index():
     return render_template("search.html")
 
@@ -96,6 +111,7 @@ def login():
         return render_template("login.html")
 
 @app.route("/logout")
+@login_required
 def logout():
     """Logout the user"""
 
@@ -106,6 +122,7 @@ def logout():
     return redirect("/")
 
 @app.route("/search")
+@login_required
 def books():
     
     # get input from form data
@@ -123,6 +140,7 @@ def books():
         return render_template("results.html", results=results)
 
 @app.route("/books/<string:book_id>")
+@login_required
 def book(book_id):
 
     # query the database for book and review details and display it to the user
@@ -135,6 +153,7 @@ def book(book_id):
     return render_template("book.html", book=book, reviews=reviews, gr=goodreads.json())
 
 @app.route("/review")
+@login_required
 def review():
 
     # get review form data
