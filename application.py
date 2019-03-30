@@ -132,8 +132,7 @@ def book(book_id):
     # get the goodreads data
     KEY = "1nstTnBgfGhKbOwVncSc0Q"
     goodreads = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": KEY, "isbns": book.isbn})
-    g = goodreads.json()
-    return render_template("book.html", book=book, reviews=reviews, gr=g)
+    return render_template("book.html", book=book, reviews=reviews, gr=goodreads.json())
 
 @app.route("/review")
 def review():
