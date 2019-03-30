@@ -174,3 +174,19 @@ def review():
 
     # redirect user to the current page
     return redirect("/books/" + book_id)
+
+@app.route("/api<int:isbn>")
+def api(isbn):
+
+    # query the database to see if book exsists
+    book = db.execute("SELECT * FROM books WHERE isbn= :isbn",{"isbn": isbn}).fetchone()
+
+    # if book not found return with an error
+    if book is None:
+        return jsonify({"error": "Book not found"}), 404
+
+    # if book found return the data
+    else:
+        reviewcount = db.execute("SELECT COUNT(*) FROM reviews WHERE book_id= :book_id", {"book_id": book["id"]}).fetchone()
+        averagescore = db.execute("SELECT AVG(rating) FROM reviews WHERE book_id= :book_id", {"book_id": book["id"]}).fetchone()
+        return jsonify({"isbn": book["isbn"], "title": book["title"], "author": book["author"], "year": book["year"], "reviewcount": reviewcount[0], "averagescore": averagescore[0]})
