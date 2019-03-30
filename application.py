@@ -1,7 +1,7 @@
 import os
 import requests
 
-from flask import Flask, session, render_template, request, redirect
+from flask import Flask, session, render_template, request, redirect, jsonify
 from flask_session import Session
 from functools import wraps
 from sqlalchemy import create_engine
@@ -175,7 +175,7 @@ def review():
     # redirect user to the current page
     return redirect("/books/" + book_id)
 
-@app.route("/api<int:isbn>")
+@app.route("/api/<string:isbn>")
 def api(isbn):
 
     # query the database to see if book exsists
