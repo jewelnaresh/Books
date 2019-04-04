@@ -15,3 +15,8 @@ main
     /* center contents */
     text-align: center;
 }
+
+nav {
+    background-color: #007bffab;
+    border-radius: 0px 0px 30px 30px;
+}
