@@ -11,9 +11,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 
-# Check for environment variable
-if not os.getenv("DATABASE_URL"):
-    raise RuntimeError("DATABASE_URL is not set")
+# The database to be used
+DATABASE_URL="postgres://irajjlzkzdgodv:bc96391c059f417f16c2d9f87a0f3da6e75d3d91bd056d5c2cc4e04fb4dcf45b@ec2-174-129-10-235.compute-1.amazonaws.com:5432/d6kn73muhfi5t3"
 
 # Configure session to use filesystem
 app.config["SESSION_PERMANENT"] = False
@@ -21,7 +20,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Set up database
-engine = create_engine(os.getenv("DATABASE_URL"))
+engine = create_engine(DATABASE_URL)
 db = scoped_session(sessionmaker(bind=engine))
 
 
@@ -100,6 +99,8 @@ def login():
         row = db.execute("SELECT id, username, hash FROM users WHERE username= :username", {"username": username}).fetchone()
         
         # check if password and username is correct
+        if not row:
+            return render_template("error.html", message="Invalid username")
         if row["username"] == username and check_password_hash(row["hash"], password):
             session["user_id"] = row.id
             return redirect("/")
