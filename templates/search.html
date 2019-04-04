@@ -3,10 +3,12 @@
 {% block title %}Search{% endblock %}
 
 {% block main %}
+<div class="container" id="pad">
 <form action="/search" method="GET">
     <div class="form-group">
-        <input type="text" class="form-control" placeholder="Enter ISBN or Title or Author or Year" name="search">
+        <input type="text" autocomplete="off" class="form-control" id="search" placeholder="Enter ISBN or Title or Author or Year" name="search">
     </div>
     <button type="submit" class="btn btn-primary">Search</button>
 </form>
+</div>
 {% endblock %}

@@ -4,12 +4,14 @@
 
 {% block main %}
 
+<div class="card-columns">
     {% for result in results %}
-        <ul>
-            <li>
-                <a href="{{ url_for('book', book_id=result.id)}}">{{result.title}}</a>
-            </li>
-        </ul>
+    <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">{{result.title}}</h5>
+          <a href="{{ url_for('book', book_id=result.id)}}" class="btn btn-primary">More info....</a>
+        </div>
+      </div>
     {% endfor %}
-
+</div>
 {% endblock %}

@@ -1,3 +1,11 @@
+body {
+    background-image: url("books.jpg");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    }
+
 main .form-control
 {
     /* center form controls */
@@ -17,6 +25,62 @@ main
 }
 
 nav {
-    background-color: #007bffab;
+    background-color: #85640499;
     border-radius: 0px 0px 30px 30px;
+}
+
+#border {
+    width: 300px;
+    height: 400px;
+    border: #987101 solid 1px;
+    padding: 40px;
+    border-radius: 10px;
+    margin: auto;
+}
+
+p {
+    font-family: cursive;
+    font-size: 50px;
+    color: #9c7503;
+}
+
+.btn-primary {
+    background-color: #856404;
+    border-color: #ad8309a3;
+}
+
+.btn-primary:hover {
+    background-color: #795c08;
+    border-color: #795c08;
+}
+
+.btn-primary:focus {
+    box-shadow: 0 0 0 0.2rem #85640482;
+}
+
+.form-control:focus {
+    background-color: transparent;
+    border-color: #856404cc;
+    box-shadow: 0 0 0 0.2rem #85640466;
+}
+
+.form-control {
+    background-color: transparent;
+    border: 1px solid #85898e;
+}
+
+#search {
+    text-align: center;
+    width: 100%;
+    border-color: #474b50;
+
+}
+
+#pad {
+    padding: 16%;
+}
+
+.card {
+    background: transparent;
+    border: #574317c2 solid 2px;
 }
